@@ -26,7 +26,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+I2C_HandleTypeDef hi2c1;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -38,8 +38,7 @@
 
 /* USER CODE END PM */
 
-/* Private variables ---------------------------------------------------------*/
-I2C_HandleTypeDef hi2c1;
+
 
 /* USER CODE BEGIN PV */
 
@@ -82,6 +81,7 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
 
+  
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -96,7 +96,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 0);
+	    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 0);
 	 	  HAL_Delay(1000);
 	 	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 1);
 	 	  HAL_Delay(1000);
