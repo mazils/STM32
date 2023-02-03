@@ -12,6 +12,37 @@ int16_t dig_T2, dig_T3, dig_P2, dig_P3, dig_P4, dig_P5, dig_P6, dig_P7, dig_P8, 
 uint8_t init_bmp280(I2C_HandleTypeDef *hi2c1)
 {
     i2c_handle = hi2c1;
+    get_id();
+   
+
+    // Register 0xF5 config
+    uint8_t config = 0b00000000;
+    config |= 0b00000011; // set to normal mode
+    config |= 0b00100000; // set temp measurement oversampling x1
+    config |= 0b00001100;  // set pres measurement oversampling x4
+
+    HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(i2c_handle, BMP280_I2C_ADDR, 0xF4, 1, &config, 100);
+    if (ret != HAL_OK)
+    {
+        return 0;
+    }
+
+     // Register 0xF4 “ctrl_meas”
+    uint8_t ctrl_meas = 0b00000000;
+    ctrl_meas |= 0b00000011; // set to IIR filter coeff.
+
+    // ctrl_meas |= 0b00100000; // set temp measurement oversampling x1
+    // ctrl_meas |= 0b00001100;  // set pres measurement oversampling x4
+
+    HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(i2c_handle, BMP280_I2C_ADDR, 0xF4, 1, &ctrl_meas, 100);
+    if (ret != HAL_OK)
+    {
+        return 0;
+    }
+    HAL_Delay(100);
+    trim_read();
+
+    
 }
 
 float bmp280_pressure_float()
@@ -47,6 +78,17 @@ void trim_read()
     dig_P9 = (trimdata[23] << 8) | trimdata[22];
 
     return 1;
+}
+uint8_t get_id()
+{
+    uint8_t bmp280_id = 0;
+    // bmp280 Register 0xD0 “id”  which is 0x58
+    HAL_StatusTypeDef ret = HAL_I2C_Mem_Read(i2c_handle, BMP280_I2C_ADDR | 0x01, &bmp280_id, 1, 100);
+    if (ret != HAL_OK || bmp280_id != 0x58)
+    {
+        return 0;
+    }
+    // print confirmation to serial out
 }
 
 // // Returns temperature in DegC, resolution is 0.01 DegC. Output value of “5123” equals 51.23 DegC.
